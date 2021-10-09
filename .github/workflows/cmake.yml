@@ -9,26 +9,47 @@ on:
   # run on all pr
 
 jobs:
-  build:
+  # build:
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest, macOS-latest]
+  #       shared: ["ON", "OFF"]
+  #   runs-on: ${{ matrix.os }}
+  #   name: ${{ matrix.os }} - shared=${{ matrix.shared }}
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Create build dir
+  #     run: cmake -E make_directory ${{github.workspace}}/build
+  #   - name: Build
+  #     working-directory: ${{github.workspace}}/build
+  #     run: |
+  #       cmake .. -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DUTF8PROC_ENABLE_TESTING=ON
+  #       cmake --build .
+  #   - name: Run Test
+  #     working-directory: ${{github.workspace}}/build
+  #     run: ctest
+
+  mingw-build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [windows-latest]
         shared: ["ON", "OFF"]
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} - shared=${{ matrix.shared }}
-
+    defaults:
+      run:
+        shell: msys2 {0}
     steps:
     - uses: actions/checkout@v2
-
+    - uses: msys2/setup-msys2@v2
+      with:
+        install: gcc make mingw-w64-x86_64-cmake
     - name: Create build dir
       run: cmake -E make_directory ${{github.workspace}}/build
-
     - name: Build
       working-directory: ${{github.workspace}}/build
       run: |
         cmake .. -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DUTF8PROC_ENABLE_TESTING=ON
         cmake --build .
-
     - name: Run Test
       working-directory: ${{github.workspace}}/build
       run: ctest
