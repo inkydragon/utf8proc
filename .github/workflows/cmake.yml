@@ -35,21 +35,19 @@ jobs:
         os: [windows-latest]
         shared: ["ON", "OFF"]
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: msys2 {0}
+
     steps:
     - uses: actions/checkout@v2
     - uses: msys2/setup-msys2@v2
       with:
         install: gcc make mingw-w64-x86_64-cmake
     - name: Create build dir
-      run: cmake -E make_directory ${{github.workspace}}/build
+      run: mkdir build
     - name: Build
-      working-directory: ${{github.workspace}}/build
+      shell: msys2 {0}
       run: |
-        cmake .. -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DUTF8PROC_ENABLE_TESTING=ON
-        cmake --build .
+        cmake -S . -B build -DBUILD_SHARED_LIBS=${{ matrix.shared }} -DUTF8PROC_ENABLE_TESTING=ON -G'MSYS Makefiles'
+        cmake --build build
     - name: Run Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest
+      shell: msys2 {0}
+      run: ctest --test-dir build -V
