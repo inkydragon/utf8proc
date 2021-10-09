@@ -60,5 +60,5 @@ jobs:
       if: matrix.shared == 'ON'
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.os }} - mingw64
+        name: windows-mingw64
         path: build/libutf8proc.*
