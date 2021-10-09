@@ -25,6 +25,12 @@ jobs:
         cmake --build build
     - name: Run Test
       run: ctest --test-dir build -V
+    - name: Upload shared lib
+      if: ${{ matrix.shared }}=='ON'
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}
+        path: build/libutf8proc.*
 
   mingw:
     strategy:
@@ -48,3 +54,9 @@ jobs:
         cmake --build build
     - name: Run Test
       run: ctest --test-dir build -V
+    - name: Upload shared lib
+      if: ${{ matrix.shared }}=='ON'
+      uses: actions/upload-artifact@v2
+      with:
+        name: mingw64-libutf8proc
+        path: build/libutf8proc.*
